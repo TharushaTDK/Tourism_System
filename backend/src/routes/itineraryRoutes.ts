@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { createItinerary, getMyItineraries, getItineraryById, updateItinerary, deleteItinerary, addItem, updateItem, removeItem, reorderItems, shareItinerary, getSharedItinerary, calculateCost } from '../controllers/itineraryController';
+import { authenticate } from '../middleware/auth';
+
+const router = Router();
+router.post('/', authenticate, createItinerary);
+router.get('/my', authenticate, getMyItineraries);
+router.get('/share/:token', getSharedItinerary);
+router.get('/:id', authenticate, getItineraryById);
+router.put('/:id', authenticate, updateItinerary);
+router.delete('/:id', authenticate, deleteItinerary);
+router.post('/:id/items', authenticate, addItem);
+router.put('/:id/items/reorder', authenticate, reorderItems);
+router.put('/:id/items/:itemId', authenticate, updateItem);
+router.delete('/:id/items/:itemId', authenticate, removeItem);
+router.post('/:id/share', authenticate, shareItinerary);
+router.get('/:id/cost', authenticate, calculateCost);
+export default router;
