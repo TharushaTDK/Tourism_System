@@ -41,7 +41,7 @@ export default function BlogPostPage() {
           {post.image_url && (
             <img src={post.image_url} alt={post.title} className="w-full h-72 object-cover rounded-2xl mb-6" />
           )}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
             <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full capitalize">{post.category}</span>
             <span className="flex items-center gap-1 text-xs text-gray-400"><Calendar className="w-3.5 h-3.5" /> {formatDate(post.created_at)}</span>
             <span className="flex items-center gap-1 text-xs text-gray-400"><Eye className="w-3.5 h-3.5" /> {post.view_count} views</span>
@@ -52,7 +52,7 @@ export default function BlogPostPage() {
             <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</div>
           </div>
           {post.tags?.length > 0 && (
-            <div className="flex items-center gap-2 mt-8 pt-6 border-t border-gray-100">
+            <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-gray-100">
               <Tag className="w-4 h-4 text-gray-400" />
               {post.tags.map((tag) => (
                 <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">#{tag}</span>

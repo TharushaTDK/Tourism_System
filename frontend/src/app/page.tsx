@@ -9,6 +9,7 @@ import DestinationCard from '@/components/DestinationCard';
 import ActivityCard from '@/components/ActivityCard';
 import PackageCard from '@/components/PackageCard';
 import StarRating from '@/components/StarRating';
+import PlanTripLink from '@/components/PlanTripLink';
 import { Destination, Activity, TourPackage, Event } from '@/types';
 
 const TESTIMONIALS = [
@@ -88,17 +89,17 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur text-white text-sm px-4 py-2 rounded-full mb-6 border border-white/20">
             Sri Lanka&apos;s #1 Travel Platform
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
             Discover<br />
             <span className="text-blue-300">Sri Lanka&apos;s</span> Magic
           </h1>
-          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
             Smart trip planning for your perfect island adventure. From ancient temples to pristine beaches.
           </p>
           <div className="flex justify-center">
-            <Link href="/planner" className="bg-white text-blue-700 font-bold px-8 py-3.5 rounded-full hover:bg-blue-50 transition-colors flex items-center gap-2 text-lg">
+            <PlanTripLink className="bg-white text-blue-700 font-bold px-8 py-3.5 rounded-full hover:bg-blue-50 transition-colors flex items-center gap-2 text-lg">
               Plan My Trip
-            </Link>
+            </PlanTripLink>
           </div>
         </div>
       </section>
@@ -106,9 +107,9 @@ export default function HomePage() {
       {/* Featured Destinations */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800">Top Destinations</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Top Destinations</h2>
               <p className="text-gray-500 mt-1">Handpicked gems across Sri Lanka</p>
             </div>
             <Link href="/destinations" className="text-blue-600 font-medium hover:underline">View all →</Link>
@@ -132,9 +133,9 @@ export default function HomePage() {
       {/* Popular Activities */}
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800">Popular Activities</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Popular Activities</h2>
               <p className="text-gray-500 mt-1">Thrilling experiences across the island</p>
             </div>
             <Link href="/activities" className="text-blue-600 font-medium hover:underline">View all →</Link>
@@ -154,9 +155,9 @@ export default function HomePage() {
       {/* Tour Packages */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800">Popular Tour Packages</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Popular Tour Packages</h2>
               <p className="text-gray-500 mt-1">All-inclusive packages for every traveler</p>
             </div>
             <Link href="/packages" className="text-blue-600 font-medium hover:underline">View all →</Link>
@@ -198,13 +199,13 @@ export default function HomePage() {
       <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-blue-600">
         <div className="max-w-3xl mx-auto text-center text-white">
           <div className="text-5xl mb-4">🧭</div>
-          <h2 className="text-4xl font-extrabold mb-4">Let Us Plan Your Perfect Trip</h2>
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Let Us Plan Your Perfect Trip</h2>
           <p className="text-blue-100 text-lg mb-8">
             Answer a few questions and we&apos;ll generate a complete, personalized itinerary with cost estimates in under 30 seconds.
           </p>
-          <Link href="/planner" className="bg-white text-blue-700 font-bold px-10 py-4 rounded-full hover:bg-blue-50 transition-colors text-lg inline-flex items-center gap-2">
+          <PlanTripLink className="bg-white text-blue-700 font-bold px-10 py-4 rounded-full hover:bg-blue-50 transition-colors text-lg inline-flex items-center gap-2">
             Start Planning for Free
-          </Link>
+          </PlanTripLink>
         </div>
       </section>
 
@@ -237,9 +238,9 @@ export default function HomePage() {
       {events && events.length > 0 && (
         <section className="py-20 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-10">
               <div>
-                <h2 className="text-3xl font-bold text-gray-800">Upcoming Events & Festivals</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Upcoming Events & Festivals</h2>
                 <p className="text-gray-500 mt-1">Experience Sri Lanka&apos;s vibrant culture</p>
               </div>
               <Link href="/events" className="text-blue-600 font-medium hover:underline">View all →</Link>

@@ -37,39 +37,41 @@ export default function DestinationMap({ destinations, selectedIds, suggestedIds
   const withCoords = destinations.filter((d) => d.latitude != null && d.longitude != null);
 
   return (
-    <MapContainer
-      center={[7.8731, 80.7718]}
-      zoom={7}
-      scrollWheelZoom={false}
-      style={{ height: '420px', width: '100%', borderRadius: '1rem', zIndex: 0 }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {withCoords.map((d) => {
-        const selected = selectedIds.includes(d.id);
-        const suggested = suggestedIds.includes(d.id);
-        return (
-          <Marker
-            key={d.id}
-            position={[Number(d.latitude), Number(d.longitude)]}
-            icon={markerIcon(d.emoji || '📍', selected, suggested)}
-            eventHandlers={{ click: () => onToggle(d.id) }}
-          >
-            <Popup>
-              <div className="text-sm font-semibold text-gray-800">{d.emoji} {d.name}</div>
-              <div className="text-xs text-gray-500 mb-2">{d.province}</div>
-              <button
-                onClick={() => onToggle(d.id)}
-                className={`text-xs font-medium px-2.5 py-1 rounded-full ${selected ? 'bg-red-50 text-red-600' : 'bg-blue-600 text-white'}`}
-              >
-                {selected ? 'Remove' : 'Select'}
-              </button>
-            </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
+    <div className="h-[300px] sm:h-[420px] w-full rounded-2xl overflow-hidden">
+      <MapContainer
+        center={[7.8731, 80.7718]}
+        zoom={7}
+        scrollWheelZoom={false}
+        style={{ height: '100%', width: '100%', zIndex: 0 }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {withCoords.map((d) => {
+          const selected = selectedIds.includes(d.id);
+          const suggested = suggestedIds.includes(d.id);
+          return (
+            <Marker
+              key={d.id}
+              position={[Number(d.latitude), Number(d.longitude)]}
+              icon={markerIcon(d.emoji || '📍', selected, suggested)}
+              eventHandlers={{ click: () => onToggle(d.id) }}
+            >
+              <Popup>
+                <div className="text-sm font-semibold text-gray-800">{d.emoji} {d.name}</div>
+                <div className="text-xs text-gray-500 mb-2">{d.province}</div>
+                <button
+                  onClick={() => onToggle(d.id)}
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${selected ? 'bg-red-50 text-red-600' : 'bg-blue-600 text-white'}`}
+                >
+                  {selected ? 'Remove' : 'Select'}
+                </button>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
   );
 }

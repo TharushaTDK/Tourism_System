@@ -91,16 +91,16 @@ function DestinationModal({ initial, onClose, onSubmit, saving }: {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-800">{initial.name ? 'Edit Destination' : 'Add Destination'}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         </div>
 
         <form
           onSubmit={(e) => { e.preventDefault(); onSubmit(form); }}
-          className="p-6 space-y-4"
+          className="p-4 sm:p-6 space-y-4"
         >
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
@@ -122,7 +122,7 @@ function DestinationModal({ initial, onClose, onSubmit, saving }: {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
               <select value={form.category} onChange={(e) => set('category', e.target.value)}
@@ -157,7 +157,7 @@ function DestinationModal({ initial, onClose, onSubmit, saving }: {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Latitude</label>
               <input required type="number" step="any" value={form.latitude} onChange={(e) => set('latitude', e.target.value)}
@@ -182,7 +182,7 @@ function DestinationModal({ initial, onClose, onSubmit, saving }: {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Best Time to Visit</label>
               <input value={form.best_time_to_visit} onChange={(e) => set('best_time_to_visit', e.target.value)}
@@ -204,26 +204,26 @@ function DestinationModal({ initial, onClose, onSubmit, saving }: {
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Visit Cost per Traveler (USD)</label>
             <p className="text-[11px] text-gray-400 mb-1.5">Entry fees / on-site activities, used in the trip cost estimate.</p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div>
                 <label className="block text-[10px] text-gray-400 mb-0.5">Budget</label>
                 <input type="number" step="any" min={0} value={form.budget_price} onChange={(e) => set('budget_price', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-2 sm:px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
                 <label className="block text-[10px] text-gray-400 mb-0.5">Mid-Range</label>
                 <input type="number" step="any" min={0} value={form.mid_range_price} onChange={(e) => set('mid_range_price', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-2 sm:px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
                 <label className="block text-[10px] text-gray-400 mb-0.5">Luxury</label>
                 <input type="number" step="any" min={0} value={form.luxury_price} onChange={(e) => set('luxury_price', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-2 sm:px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border-2 border-gray-300 text-gray-600 py-2.5 rounded-lg font-medium hover:border-gray-400">Cancel</button>
             <button type="submit" disabled={saving} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-60">
               {saving ? 'Saving...' : 'Save Destination'}
@@ -299,13 +299,13 @@ export default function AdminDestinationsPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Destination Management</h1>
           <p className="text-gray-500">{data?.total || 0} destinations</p>
         </div>
-        <button onClick={() => setModal('new')} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+        <button onClick={() => setModal('new')} className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 sm:self-start">
           <Plus className="w-4 h-4" /> Add Destination
         </button>
       </div>
@@ -313,40 +313,42 @@ export default function AdminDestinationsPage() {
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         {isLoading ? <div className="p-8 text-center text-gray-400">Loading...</div> : !data?.items?.length ? <div className="p-8 text-center text-gray-400">No destinations.</div> : (
           <>
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  {['', 'Name', 'Category', 'Rating', 'Featured', 'Actions'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {data.items.map((d) => (
-                  <tr key={d.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-xl">{d.emoji || '📍'}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{d.name}<div className="text-xs text-gray-400 font-normal">{d.province}</div></td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full capitalize">{d.category}</span>
-                    </td>
-                    <td className="px-4 py-3"><StarRating rating={d.rating} size="sm" /></td>
-                    <td className="px-4 py-3">
-                      <button onClick={() => toggleFeatured.mutate(d.id)}
-                        className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors ${d.is_featured ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
-                        <Star className="w-3 h-3" /> {d.is_featured ? 'Featured' : 'Not Featured'}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <button onClick={() => setModal(d)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
-                        <button onClick={() => { if (confirm('Delete this destination?')) deleteMutation.mutate(d.id); }}
-                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[640px]">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    {['', 'Name', 'Category', 'Rating', 'Featured', 'Actions'].map(h => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {data.items.map((d) => (
+                    <tr key={d.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-xl">{d.emoji || '📍'}</td>
+                      <td className="px-4 py-3 font-medium text-gray-800">{d.name}<div className="text-xs text-gray-400 font-normal">{d.province}</div></td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full capitalize">{d.category}</span>
+                      </td>
+                      <td className="px-4 py-3"><StarRating rating={d.rating} size="sm" /></td>
+                      <td className="px-4 py-3">
+                        <button onClick={() => toggleFeatured.mutate(d.id)}
+                          className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors whitespace-nowrap ${d.is_featured ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                          <Star className="w-3 h-3" /> {d.is_featured ? 'Featured' : 'Not Featured'}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1">
+                          <button onClick={() => setModal(d)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
+                          <button onClick={() => { if (confirm('Delete this destination?')) deleteMutation.mutate(d.id); }}
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <div className="flex justify-center gap-2 p-4">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded border border-gray-300 text-xs disabled:opacity-40">Previous</button>
               <span className="px-3 py-1.5 text-xs text-gray-600">Page {page}</span>

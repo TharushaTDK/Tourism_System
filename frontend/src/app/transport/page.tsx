@@ -118,13 +118,13 @@ export default function TransportPage() {
         ) : (
           <div className="space-y-4">
             {drivers.map((driver) => (
-              <div key={driver.id} className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-5 hover:shadow-md transition-shadow">
+              <div key={driver.id} className="bg-white rounded-xl border border-gray-100 p-5 flex flex-wrap sm:flex-nowrap items-center gap-5 hover:shadow-md transition-shadow">
                 <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-lg shrink-0">
                   {driver.profile_image ? (
                     <img src={driver.profile_image} alt={driver.name} className="w-14 h-14 rounded-full object-cover" />
                   ) : driver.name.slice(0, 2).toUpperCase()}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-bold text-gray-800">{driver.name}</h3>
                     {driver.is_verified && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">✓ Verified</span>}
@@ -138,7 +138,7 @@ export default function TransportPage() {
                     <p className="text-xs text-gray-500 mt-1">{driver.vehicle.make} {driver.vehicle.model} · {driver.vehicle.ac ? '❄️ AC' : 'No AC'} · {driver.vehicle.capacity} seats</p>
                   )}
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <p className="font-bold text-blue-600 text-lg">${selectedVehicleInfo?.price}<span className="text-xs text-gray-400 font-normal">/day</span></p>
                   <button onClick={() => handleBook(driver.id)} disabled={bookingLoading}
                     className="mt-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">

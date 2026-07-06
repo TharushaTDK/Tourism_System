@@ -34,16 +34,16 @@ export default function AdminDashboardPage() {
   const topDestinations = stats?.top_destinations ?? [];
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
         <p className="text-gray-500">LankaJourney.lk — Platform Overview</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {STAT_CARDS.map(({ label, value, icon: Icon, color, href }) => (
-          <Link key={label} href={href} className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+          <Link key={label} href={href} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 hover:shadow-md transition-shadow">
             <div className={`w-10 h-10 bg-${color}-100 rounded-xl flex items-center justify-center mb-3`}>
               <Icon className={`w-5 h-5 text-${color}-600`} />
             </div>
@@ -103,31 +103,33 @@ export default function AdminDashboardPage() {
 
       {/* Recent Bookings */}
       <div className="mt-6 bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-800">Recent Bookings</h2>
           <Link href="/admin/trips" className="text-sm text-blue-600 hover:underline">View all →</Link>
         </div>
         {recentBookings?.length ? (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                {['ID', 'Tourist', 'Type', 'Amount', 'Status'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {recentBookings.map((b: { id: number; user_name?: string; booking_type?: string; total_amount?: number; status: string }) => (
-                <tr key={b.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-mono text-xs text-gray-400">#{b.id}</td>
-                  <td className="px-4 py-3 font-medium">{b.user_name || '—'}</td>
-                  <td className="px-4 py-3 capitalize text-gray-500">{b.booking_type || '—'}</td>
-                  <td className="px-4 py-3 font-medium">{formatCurrency(b.total_amount || 0)}</td>
-                  <td className="px-4 py-3"><span className="capitalize text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{b.status}</span></td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[560px]">
+              <thead className="bg-gray-50">
+                <tr>
+                  {['ID', 'Tourist', 'Type', 'Amount', 'Status'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {recentBookings.map((b: { id: number; user_name?: string; booking_type?: string; total_amount?: number; status: string }) => (
+                  <tr key={b.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-400">#{b.id}</td>
+                    <td className="px-4 py-3 font-medium">{b.user_name || '—'}</td>
+                    <td className="px-4 py-3 capitalize text-gray-500">{b.booking_type || '—'}</td>
+                    <td className="px-4 py-3 font-medium">{formatCurrency(b.total_amount || 0)}</td>
+                    <td className="px-4 py-3"><span className="capitalize text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{b.status}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="text-center text-gray-400 py-8 text-sm">No bookings yet.</p>
         )}

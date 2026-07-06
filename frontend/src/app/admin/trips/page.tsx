@@ -36,9 +36,9 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
   const td = trip.trip_details;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
           <div>
             <h2 className="font-bold text-gray-800">Trip #{trip.id}</h2>
             <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full border ${getStatusColor(trip.status)}`}>{formatStatusLabel(trip.status)}</span>
@@ -46,8 +46,8 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         </div>
 
-        <div className="p-6 space-y-5">
-          <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="p-4 sm:p-6 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-400 mb-0.5">Customer</p>
               <p className="font-medium text-gray-800">{trip.customer_name}</p>
@@ -61,7 +61,7 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div className="bg-gray-50 rounded-lg p-3 text-center">
               <Calendar className="w-4 h-4 text-blue-500 mx-auto mb-1" />
               <p className="text-xs text-gray-500">{formatDateRange(trip.start_date, trip.end_date)}</p>
@@ -104,7 +104,7 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}
               className="flex-1 border-2 border-blue-500 text-blue-600 py-2.5 rounded-lg font-semibold hover:bg-blue-50 disabled:opacity-60">
               {saveMutation.isPending ? 'Saving...' : 'Save Changes'}
@@ -135,13 +135,13 @@ export default function AdminTripsPage() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Trips</h1>
         <p className="text-gray-500">{data?.total ?? 0} trips — review, edit, and confirm customer trip plans</p>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 flex-wrap">
         {FILTERS.map((f) => (
           <button key={f.value} onClick={() => setStatus(f.value)}
             className={`text-sm font-medium px-4 py-2 rounded-full transition-colors ${status === f.value ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-blue-300'}`}>
@@ -152,35 +152,37 @@ export default function AdminTripsPage() {
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         {isLoading ? <div className="p-8 text-center text-gray-400">Loading...</div> : !data?.items?.length ? <div className="p-8 text-center text-gray-400">No trips.</div> : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                {['Customer', 'Trip', 'Dates', 'Est. Total', 'Status', ''].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {data.items.map((t) => {
-                const range = t.trip_details?.cost_estimate?.total;
-                return (
-                  <tr key={t.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelected(t)}>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-gray-800">{t.customer_name}</p>
-                      <p className="text-xs text-gray-400">{t.contact_email || t.account_email}</p>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 max-w-[220px] truncate">{t.title}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{formatDateRange(t.start_date, t.end_date)}</td>
-                    <td className="px-4 py-3 text-gray-800">
-                      {range ? `${formatCurrency(range.low)} – ${formatCurrency(range.high)}` : t.estimated_cost ? formatCurrency(Number(t.estimated_cost)) : '—'}
-                    </td>
-                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full border ${getStatusColor(t.status)}`}>{formatStatusLabel(t.status)}</span></td>
-                    <td className="px-4 py-3 text-blue-600 text-xs font-medium">Review →</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[680px]">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {['Customer', 'Trip', 'Dates', 'Est. Total', 'Status', ''].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {data.items.map((t) => {
+                  const range = t.trip_details?.cost_estimate?.total;
+                  return (
+                    <tr key={t.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelected(t)}>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-800">{t.customer_name}</p>
+                        <p className="text-xs text-gray-400">{t.contact_email || t.account_email}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 max-w-[220px] truncate">{t.title}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{formatDateRange(t.start_date, t.end_date)}</td>
+                      <td className="px-4 py-3 text-gray-800 whitespace-nowrap">
+                        {range ? `${formatCurrency(range.low)} – ${formatCurrency(range.high)}` : t.estimated_cost ? formatCurrency(Number(t.estimated_cost)) : '—'}
+                      </td>
+                      <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full border ${getStatusColor(t.status)}`}>{formatStatusLabel(t.status)}</span></td>
+                      <td className="px-4 py-3 text-blue-600 text-xs font-medium whitespace-nowrap">Review →</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

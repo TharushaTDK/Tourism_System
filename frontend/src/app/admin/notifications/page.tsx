@@ -18,13 +18,13 @@ export default function AdminNotificationsPage() {
   });
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-4 md:p-6 max-w-2xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Notification Manager</h1>
         <p className="text-gray-500">Send notifications to tourists</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <h2 className="font-bold text-gray-800 mb-5 flex items-center gap-2"><Bell className="w-5 h-5 text-blue-600" /> Send Notification</h2>
 
         <div className="space-y-4">
@@ -38,13 +38,13 @@ export default function AdminNotificationsPage() {
 
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1.5 block">Target Audience</label>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               {[
                 { value: 'all', label: 'All Tourists', icon: Globe },
                 { value: 'specific', label: 'Specific User', icon: Users },
               ].map(({ value, label, icon: Icon }) => (
                 <button key={value} onClick={() => setForm({ ...form, target: value })}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${form.target === value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:border-blue-300'}`}>
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${form.target === value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:border-blue-300'}`}>
                   <Icon className="w-4 h-4" /> {label}
                 </button>
               ))}
@@ -73,14 +73,14 @@ export default function AdminNotificationsPage() {
 
           <button onClick={() => sendNotification.mutate(form)}
             disabled={!form.title || !form.message || sendNotification.isPending}
-            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">
+            className="flex items-center justify-center gap-2 w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">
             <Send className="w-4 h-4" /> {sendNotification.isPending ? 'Sending...' : 'Send Notification'}
           </button>
         </div>
       </div>
 
       {/* Quick templates */}
-      <div className="mt-6 bg-white rounded-xl border border-gray-100 p-6">
+      <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <h3 className="font-bold text-gray-800 mb-4">Quick Templates</h3>
         <div className="space-y-2">
           {[

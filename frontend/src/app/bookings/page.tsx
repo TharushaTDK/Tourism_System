@@ -51,10 +51,10 @@ export default function BookingsPage() {
               <div className="w-full sm:w-32 h-24 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg overflow-hidden flex-shrink-0">
                 {b.image_url && <img src={b.image_url} alt={b.destination_name} className="w-full h-full object-cover" />}
               </div>
-              <div className="flex-1">
-                <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <h3 className="font-bold text-gray-800 text-lg">{b.destination_name}</h3>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full capitalize ${STATUS_COLORS[b.status]}`}>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full capitalize shrink-0 ${STATUS_COLORS[b.status]}`}>
                     {b.status}
                   </span>
                 </div>

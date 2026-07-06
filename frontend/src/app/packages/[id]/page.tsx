@@ -63,7 +63,7 @@ export default function PackageDetailPage() {
           </div>
           <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full capitalize">{pkg.category}</span>
           <h1 className="text-3xl font-bold text-gray-800 mt-3 mb-2">{pkg.name}</h1>
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
             <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-blue-500" /> {pkg.duration_days} days</span>
             <span className="flex items-center gap-1"><Users className="w-4 h-4 text-blue-500" /> Max {pkg.max_group}</span>
             <StarRating rating={pkg.rating} size="sm" showCount count={pkg.review_count} />

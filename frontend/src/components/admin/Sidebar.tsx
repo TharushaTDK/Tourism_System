@@ -64,13 +64,13 @@ export default function AdminSidebar() {
       </div>
 
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center gap-2 bg-blue-950 text-white px-4 py-3 sticky top-16 z-40">
-        <Compass className="w-5 h-5 text-blue-400" />
-        <span className="font-bold text-sm">Admin</span>
-        <div className="flex gap-1 ml-auto overflow-x-auto">
+      <div className="md:hidden flex items-center gap-2 bg-blue-950 text-white px-3 py-2.5 sticky top-0 z-40">
+        <Compass className="w-5 h-5 text-blue-400 shrink-0" />
+        <span className="font-bold text-sm shrink-0">Admin</span>
+        <div className="flex gap-1 ml-auto overflow-x-auto pr-1">
           {NAV.map(({ href, label }) => (
             <Link key={href} href={href}
-              className={`px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors ${pathname === href ? 'bg-blue-600 text-white' : 'text-blue-200 hover:text-white'}`}>
+              className={`px-3 py-2 rounded text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${pathname === href ? 'bg-blue-600 text-white' : 'text-blue-200 hover:text-white'}`}>
               {label}
             </Link>
           ))}

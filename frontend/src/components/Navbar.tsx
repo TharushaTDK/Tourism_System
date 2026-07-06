@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
+import PlanTripLink from '@/components/PlanTripLink';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -86,12 +87,9 @@ export default function Navbar() {
             {navLink('/packages', 'Packages')}
             {navLink('/hotels', 'Hotels')}
 
-            <Link
-              href="/planner"
-              className="text-sm font-semibold bg-blue-600 text-white px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1.5"
-            >
+            <PlanTripLink className="text-sm font-semibold bg-blue-600 text-white px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1.5">
               Plan My Trip
-            </Link>
+            </PlanTripLink>
 
             {navLink('/blog', 'Blog')}
           </div>
@@ -128,7 +126,7 @@ export default function Navbar() {
                     <Link href="/dashboard" className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setUserOpen(false)}>
                       <LayoutDashboard className="w-4 h-4" /> My Dashboard
                     </Link>
-                    <Link href="/profile" className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setUserOpen(false)}>
+                    <Link href="/dashboard/profile" className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setUserOpen(false)}>
                       <User className="w-4 h-4" /> Profile
                     </Link>
                     {user?.role === 'admin' && (
@@ -174,9 +172,9 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link href="/planner" className="block text-center bg-blue-600 text-white py-2.5 rounded-lg font-semibold" onClick={() => setMobileOpen(false)}>
+          <PlanTripLink className="block text-center bg-blue-600 text-white py-2.5 rounded-lg font-semibold" onNavigate={() => setMobileOpen(false)}>
             Plan My Trip
-          </Link>
+          </PlanTripLink>
           {isAuthenticated ? (
             <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full text-red-600 py-2 text-sm">
               Logout

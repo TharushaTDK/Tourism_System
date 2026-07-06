@@ -65,16 +65,16 @@ export default function ActivityDetailPage() {
             ) : <div className="w-full h-full flex items-center justify-center text-6xl">🎯</div>}
           </div>
           {images.length > 1 && (
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2 mb-6 flex-wrap">
               {images.map((img, i) => (
-                <button key={i} onClick={() => setSelectedImage(i)} className={`w-20 h-14 rounded-lg overflow-hidden border-2 ${i === selectedImage ? 'border-blue-500' : 'border-transparent'}`}>
+                <button key={i} onClick={() => setSelectedImage(i)} className={`w-20 h-14 rounded-lg overflow-hidden border-2 shrink-0 ${i === selectedImage ? 'border-blue-500' : 'border-transparent'}`}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
           )}
 
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
             <div>
               <div className="flex gap-2 mb-2">
                 <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full capitalize">{activity.category}</span>

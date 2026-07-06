@@ -58,25 +58,25 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
           <p className="text-gray-500">{data?.total || 0} registered users</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700">
+        <button onClick={exportCSV} className="flex items-center justify-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 sm:self-start">
           <Download className="w-4 h-4" /> Export CSV
         </button>
       </div>
 
-      <div className="flex gap-3 mb-5">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
+        <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input type="text" placeholder="Search by name, email, or nationality..." value={search} onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <select value={role} onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-44">
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-full sm:w-44">
           {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
         </select>
       </div>
@@ -87,38 +87,40 @@ export default function AdminUsersPage() {
         ) : !users.length ? (
           <div className="p-8 text-center text-gray-400">No users found.</div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                {['ID', 'Name', 'Email', 'Role', 'Nationality', 'Joined', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-mono text-xs text-gray-400">#{u.id}</td>
-                  <td className="px-4 py-3 font-medium text-gray-800">{u.name}</td>
-                  <td className="px-4 py-3 text-gray-500">{u.email}</td>
-                  <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full capitalize ${ROLE_BADGE[u.role] || 'bg-gray-100 text-gray-600'}`}>{u.role}</span></td>
-                  <td className="px-4 py-3 text-gray-500">{u.nationality || '—'}</td>
-                  <td className="px-4 py-3 text-gray-400">{formatDate(u.created_at)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${u.is_verified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {u.is_verified ? 'Verified' : 'Unverified'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button onClick={() => toggleVerify.mutate({ id: u.id, is_verified: !u.is_verified })}
-                      className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title={u.is_verified ? 'Deactivate' : 'Activate'}>
-                      {u.is_verified ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[720px]">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {['ID', 'Name', 'Email', 'Role', 'Nationality', 'Joined', 'Status', 'Actions'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {users.map((u) => (
+                  <tr key={u.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-400">#{u.id}</td>
+                    <td className="px-4 py-3 font-medium text-gray-800">{u.name}</td>
+                    <td className="px-4 py-3 text-gray-500">{u.email}</td>
+                    <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full capitalize ${ROLE_BADGE[u.role] || 'bg-gray-100 text-gray-600'}`}>{u.role}</span></td>
+                    <td className="px-4 py-3 text-gray-500">{u.nationality || '—'}</td>
+                    <td className="px-4 py-3 text-gray-400">{formatDate(u.created_at)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${u.is_verified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {u.is_verified ? 'Verified' : 'Unverified'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button onClick={() => toggleVerify.mutate({ id: u.id, is_verified: !u.is_verified })}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title={u.is_verified ? 'Deactivate' : 'Activate'}>
+                        {u.is_verified ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

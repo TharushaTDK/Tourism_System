@@ -16,7 +16,7 @@ import { Check, ChevronRight, MapPin, DollarSign, Calendar, Users, Clock, Mail, 
 
 const DestinationMap = dynamic(() => import('@/components/DestinationMap'), {
   ssr: false,
-  loading: () => <div className="h-[420px] bg-gray-100 rounded-2xl animate-pulse" />,
+  loading: () => <div className="h-[300px] sm:h-[420px] bg-gray-100 rounded-2xl animate-pulse" />,
 });
 
 const INTERESTS = ['Beach', 'Wildlife', 'Culture', 'Adventure', 'Food', 'Wellness', 'Photography', 'Nature'];
@@ -261,19 +261,19 @@ export default function PlannerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-gray-50 py-8 sm:py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
             Smart Trip Planner
           </div>
-          <h1 className="text-4xl font-bold text-gray-800">Plan Your Perfect Sri Lanka Trip</h1>
-          <p className="text-gray-500 mt-2">We create a personalized itinerary in seconds</p>
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800">Plan Your Perfect Sri Lanka Trip</h1>
+          <p className="text-gray-500 mt-2 text-sm sm:text-base">We create a personalized itinerary in seconds</p>
         </div>
 
         <StepIndicator current={step} />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
           {/* STEP 1 */}
           {step === 1 && (
             <div className="space-y-8">
@@ -302,15 +302,15 @@ export default function PlannerPage() {
                     { group: 'children_6_12' as const, label: 'Children', desc: '6 – 12 years', value: children_6_12, min: 0 },
                     { group: 'children_under_5' as const, label: 'Children', desc: 'Below 5 years', value: children_under_5, min: 0 },
                   ].map(({ group, label, desc, value, min }) => (
-                    <div key={group} className="flex items-center justify-between">
-                      <div>
+                    <div key={group} className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="min-w-0">
                         <p className="text-sm font-medium text-gray-800">{label}</p>
                         <p className="text-xs text-gray-400">{desc}</p>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <button onClick={() => setTravelerGroup(group, Math.max(min, value - 1))} className="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:border-blue-500 hover:text-blue-600 text-lg font-bold">−</button>
-                        <span className="text-xl font-bold text-gray-800 w-6 text-center">{value}</span>
-                        <button onClick={() => setTravelerGroup(group, Math.min(10, value + 1))} className="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:border-blue-500 hover:text-blue-600 text-lg font-bold">+</button>
+                      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                        <button onClick={() => setTravelerGroup(group, Math.max(min, value - 1))} className="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:border-blue-500 hover:text-blue-600 text-lg font-bold shrink-0">−</button>
+                        <span className="text-xl font-bold text-gray-800 w-6 text-center shrink-0">{value}</span>
+                        <button onClick={() => setTravelerGroup(group, Math.min(10, value + 1))} className="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:border-blue-500 hover:text-blue-600 text-lg font-bold shrink-0">+</button>
                       </div>
                     </div>
                   ))}
@@ -320,13 +320,13 @@ export default function PlannerPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Budget Level</label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {BUDGET_OPTIONS.map((b) => (
                     <button key={b.value} onClick={() => setPlannerField('budget', b.value as 'budget' | 'mid_range' | 'luxury')}
-                      className={`p-4 rounded-xl border-2 text-center transition-all ${budget === b.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
-                      <div className="text-2xl mb-1">{b.emoji}</div>
-                      <div className="font-semibold text-sm text-gray-800">{b.label}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{b.desc}</div>
+                      className={`p-2.5 sm:p-4 rounded-xl border-2 text-center transition-all ${budget === b.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
+                      <div className="text-xl sm:text-2xl mb-1">{b.emoji}</div>
+                      <div className="font-semibold text-xs sm:text-sm text-gray-800">{b.label}</div>
+                      <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">{b.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -398,7 +398,7 @@ export default function PlannerPage() {
                 const est = cost_estimate || calcCost();
                 const fmtRange = (r: CostRange) => r.low === r.high ? formatCurrency(r.low) : `${formatCurrency(r.low)} – ${formatCurrency(r.high)}`;
                 return (
-                  <div className="bg-gray-50 rounded-xl p-6">
+                  <div className="bg-gray-50 rounded-xl p-4 sm:p-6">
                     <div className="space-y-3 mb-4">
                       {[
                         { label: 'Transportation', amount: est.transport, icon: '🚗', note: `≈ ${est.distance_km} km total` },
@@ -406,15 +406,15 @@ export default function PlannerPage() {
                         { label: 'Destinations', amount: est.destinations, icon: '🎯', note: `${selected_destinations.length} stop${selected_destinations.length !== 1 ? 's' : ''}` },
                         { label: 'Food & Dining', amount: est.food, icon: '🍛', note: `${nights} day${nights !== 1 ? 's' : ''}` },
                       ].map((item) => (
-                        <div key={item.label} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
-                          <span className="flex items-center gap-2 text-gray-600">{item.icon} {item.label}<span className="text-xs text-gray-400">({item.note})</span></span>
-                          <span className="font-semibold text-gray-800">{fmtRange(item.amount)}</span>
+                        <div key={item.label} className="flex items-center justify-between gap-2 py-2 border-b border-gray-200 last:border-0">
+                          <span className="flex items-center gap-2 text-gray-600 min-w-0 truncate">{item.icon} {item.label}<span className="text-xs text-gray-400 hidden sm:inline">({item.note})</span></span>
+                          <span className="font-semibold text-gray-800 shrink-0">{fmtRange(item.amount)}</span>
                         </div>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between pt-3 border-t-2 border-blue-500">
-                      <span className="text-lg font-bold text-gray-800">Approximate Total</span>
-                      <span className="text-2xl font-extrabold text-blue-600">{fmtRange(est.total)}</span>
+                    <div className="flex items-center justify-between gap-2 pt-3 border-t-2 border-blue-500">
+                      <span className="text-base sm:text-lg font-bold text-gray-800">Approximate Total</span>
+                      <span className="text-xl sm:text-2xl font-extrabold text-blue-600 shrink-0">{fmtRange(est.total)}</span>
                     </div>
                     <p className="text-xs text-gray-400 mt-3">* For {travelers} traveler{travelers > 1 ? 's' : ''} over {nights} night{nights !== 1 ? 's' : ''}.</p>
                     <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 flex items-start gap-2">

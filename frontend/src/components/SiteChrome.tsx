@@ -6,9 +6,9 @@ import Footer from './Footer';
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
+  const hasOwnChrome = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
 
-  if (isAdmin) return <>{children}</>;
+  if (hasOwnChrome) return <>{children}</>;
 
   return (
     <>

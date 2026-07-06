@@ -41,13 +41,13 @@ function TransportRateModal({ initial, onClose, onSubmit, saving }: {
   const set = <K extends keyof RateForm>(key: K, value: RateForm[K]) => setForm((f) => ({ ...f, [key]: value }));
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-800">{initial.vehicle_type ? 'Edit Transport Rate' : 'Add Transport Rate'}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         </div>
-        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} className="p-6 space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} className="p-4 sm:p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Budget Category</label>
             <select value={form.category} onChange={(e) => set('category', e.target.value as BudgetCategory)}
@@ -60,7 +60,7 @@ function TransportRateModal({ initial, onClose, onSubmit, saving }: {
             <input required value={form.vehicle_type} onChange={(e) => set('vehicle_type', e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Van" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Min Passengers</label>
               <input required type="number" min={1} value={form.min_passengers} onChange={(e) => set('min_passengers', e.target.value)}
@@ -77,7 +77,7 @@ function TransportRateModal({ initial, onClose, onSubmit, saving }: {
             <input required type="number" step="any" min={0} value={form.price_per_km} onChange={(e) => set('price_per_km', e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.35" />
           </div>
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border-2 border-gray-300 text-gray-600 py-2.5 rounded-lg font-medium hover:border-gray-400">Cancel</button>
             <button type="submit" disabled={saving} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-60">
               {saving ? 'Saving...' : 'Save Rate'}
@@ -107,20 +107,20 @@ function CostSettingsCard({ settings }: { settings: CostSetting[] }) {
     setEditing((e) => ({ ...e, [s.id]: { accommodation_per_night: rowValue(s, 'accommodation_per_night'), food_per_day: rowValue(s, 'food_per_day'), [field]: value } }));
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5">
+    <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5">
       <h2 className="font-bold text-gray-800 mb-1">Accommodation &amp; Food (per day)</h2>
       <p className="text-xs text-gray-400 mb-4">Applied per traveler, per night/day, by budget tier.</p>
       <div className="space-y-3">
         {settings.map((s) => (
-          <div key={s.id} className="flex items-center gap-3">
+          <div key={s.id} className="flex flex-wrap sm:flex-nowrap items-end sm:items-center gap-3">
             <span className={`text-xs font-medium px-2 py-1 rounded-full w-24 text-center shrink-0 ${CATEGORY_BADGE[s.category]}`}>{CATEGORY_LABEL[s.category]}</span>
-            <div className="flex-1">
+            <div className="flex-1 min-w-[140px]">
               <label className="block text-[10px] text-gray-400 mb-0.5">Accommodation / night ($)</label>
               <input type="number" step="any" min={0} value={rowValue(s, 'accommodation_per_night')}
                 onChange={(e) => setRow(s, 'accommodation_per_night', e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-[140px]">
               <label className="block text-[10px] text-gray-400 mb-0.5">Food / day ($)</label>
               <input type="number" step="any" min={0} value={rowValue(s, 'food_per_day')}
                 onChange={(e) => setRow(s, 'food_per_day', e.target.value)}
@@ -187,7 +187,7 @@ export default function AdminPricingPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Pricing</h1>
         <p className="text-gray-500">Rates used to auto-calculate customer trip cost estimates.</p>
@@ -196,42 +196,44 @@ export default function AdminPricingPage() {
       {loadingSettings ? <div className="p-8 text-center text-gray-400">Loading...</div> : <CostSettingsCard settings={settings} />}
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-4 border-b border-gray-100">
           <div>
             <h2 className="font-bold text-gray-800">Transport Rates (per km)</h2>
             <p className="text-xs text-gray-400">Tiered by budget category and passenger count.</p>
           </div>
-          <button onClick={() => setModal('new')} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+          <button onClick={() => setModal('new')} className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 sm:self-start shrink-0">
             <Plus className="w-4 h-4" /> Add Rate
           </button>
         </div>
         {loadingRates ? <div className="p-8 text-center text-gray-400">Loading...</div> : !rates.length ? <div className="p-8 text-center text-gray-400">No transport rates yet.</div> : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                {['Category', 'Vehicle', 'Passengers', 'Price / km', 'Actions'].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {rates.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3"><span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CATEGORY_BADGE[r.category]}`}>{CATEGORY_LABEL[r.category]}</span></td>
-                  <td className="px-4 py-3 font-medium text-gray-800">{r.vehicle_type}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.min_passengers}–{r.max_passengers} pax</td>
-                  <td className="px-4 py-3 text-gray-800">${Number(r.price_per_km).toFixed(2)}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      <button onClick={() => setModal(r)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => { if (confirm('Delete this transport rate?')) deleteMutation.mutate(r.id); }}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[560px]">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {['Category', 'Vehicle', 'Passengers', 'Price / km', 'Actions'].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {rates.map((r) => (
+                  <tr key={r.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3"><span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CATEGORY_BADGE[r.category]}`}>{CATEGORY_LABEL[r.category]}</span></td>
+                    <td className="px-4 py-3 font-medium text-gray-800">{r.vehicle_type}</td>
+                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{r.min_passengers}–{r.max_passengers} pax</td>
+                    <td className="px-4 py-3 text-gray-800">${Number(r.price_per_km).toFixed(2)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        <button onClick={() => setModal(r)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
+                        <button onClick={() => { if (confirm('Delete this transport rate?')) deleteMutation.mutate(r.id); }}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

@@ -42,9 +42,9 @@ export default function DestinationsPage() {
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-400" />
-          <div className="flex gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2 min-w-0">
+          <Filter className="w-4 h-4 text-gray-400 shrink-0" />
+          <div className="flex gap-2 overflow-x-auto min-w-0 pb-1">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}

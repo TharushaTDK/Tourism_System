@@ -56,19 +56,19 @@ export default function DriverDashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {[
           { label: "Today's Trips", value: todayTrips.length, icon: Car, color: 'emerald' },
           { label: 'Total Earnings', value: formatCurrency(totalEarnings), icon: DollarSign, color: 'yellow' },
           { label: 'Rating', value: (stats?.rating || 4.8).toFixed(1) + '⭐', icon: Star, color: 'orange' },
           { label: 'Completed', value: completedTrips.length, icon: CheckCircle, color: 'blue' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-xl border border-gray-100 p-5">
-            <div className={`w-10 h-10 bg-${color}-100 rounded-xl flex items-center justify-center mb-3`}>
-              <Icon className={`w-5 h-5 text-${color}-600`} />
+          <div key={label} className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 min-w-0">
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 bg-${color}-100 rounded-xl flex items-center justify-center mb-2 sm:mb-3`}>
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 text-${color}-600`} />
             </div>
-            <p className="text-xl font-bold text-gray-800">{value}</p>
-            <p className="text-sm text-gray-500 mt-0.5">{label}</p>
+            <p className="text-lg sm:text-xl font-bold text-gray-800 truncate">{value}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -86,16 +86,16 @@ export default function DriverDashboardPage() {
             <div className="space-y-4">
               {todayTrips.map((trip) => (
                 <div key={trip.id} className="border border-gray-100 rounded-xl p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
+                  <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
+                    <div className="min-w-0">
                       <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
-                        <MapPin className="w-3.5 h-3.5 text-blue-500" /> {trip.origin}
+                        <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" /> <span className="truncate">{trip.origin}</span>
                       </div>
                       <div className="flex items-center gap-1 text-sm font-medium text-gray-800">
-                        <Navigation className="w-3.5 h-3.5 text-blue-600" /> {trip.destination}
+                        <Navigation className="w-3.5 h-3.5 text-blue-600 shrink-0" /> <span className="truncate">{trip.destination}</span>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="text-sm font-bold text-gray-800">{trip.pickup_time}</p>
                       {trip.fare && <p className="text-xs text-blue-600 font-medium">{formatCurrency(trip.fare)}</p>}
                     </div>
@@ -134,12 +134,12 @@ export default function DriverDashboardPage() {
           <h2 className="font-bold text-gray-800 mb-5">Recent Earnings</h2>
           <div className="space-y-3">
             {completedTrips.slice(0, 6).map((t) => (
-              <div key={t.id} className="flex items-center justify-between text-sm">
-                <div>
-                  <p className="text-gray-800 font-medium">{t.origin} → {t.destination}</p>
+              <div key={t.id} className="flex items-center justify-between gap-2 text-sm">
+                <div className="min-w-0">
+                  <p className="text-gray-800 font-medium truncate">{t.origin} → {t.destination}</p>
                   <p className="text-gray-400 text-xs">{t.pickup_date}</p>
                 </div>
-                <p className="font-bold text-blue-600">{formatCurrency(t.fare || 0)}</p>
+                <p className="font-bold text-blue-600 shrink-0">{formatCurrency(t.fare || 0)}</p>
               </div>
             ))}
             {!completedTrips.length && <p className="text-gray-400 text-sm text-center py-8">No completed trips yet.</p>}

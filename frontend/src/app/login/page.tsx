@@ -36,7 +36,7 @@ function LoginForm() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-8">
           <MapPin className="w-10 h-10 text-blue-600 mx-auto mb-2" />
           <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>

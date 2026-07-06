@@ -8,11 +8,18 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { Booking, Trip } from '@/types';
 import {
-  Sparkles, Car, Map, Calendar, DollarSign, MapPin, Clock,
-  Trash2, Share2, Mail, Phone, MessageCircle, ChevronDown, ChevronUp, CheckCircle2, Plus, CheckCircle,
+  Calendar, DollarSign, X, BookOpen, MapPin, Clock, Mail, Phone, MessageCircle,
+  ChevronDown, ChevronUp, CheckCircle2, Plus,
 } from 'lucide-react';
-import { formatCurrency, getStatusColor, formatDate, formatDateRange, formatStatusLabel } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { formatCurrency, getStatusColor, formatDate, formatDateRange, formatStatusLabel } from '@/lib/utils';
+
+const BOOKING_TABS = ['All', 'Hotels', 'Activities', 'Transport', 'Packages'];
+const TRIP_FILTERS: { label: string; value: '' | 'pending_approval' | 'approved' }[] = [
+  { label: 'All', value: '' },
+  { label: 'Pending Approval', value: 'pending_approval' },
+  { label: 'Approved', value: 'approved' },
+];
 
 const rangeMid = (t: Trip) => {
   const r = t.trip_details?.cost_estimate?.total;
@@ -20,26 +27,27 @@ const rangeMid = (t: Trip) => {
   return Number(t.estimated_cost || t.total_budget) || 0;
 };
 
-export default function DashboardPage() {
-  const { isAuthenticated, user, hasHydrated } = useAuthStore();
+export default function TripsPage() {
+  const { isAuthenticated, hasHydrated } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [tripFilter, setTripFilter] = useState<'' | 'pending_approval' | 'approved'>('');
+  const [bookingTab, setBookingTab] = useState('All');
 
   useEffect(() => { if (hasHydrated && !isAuthenticated) router.push('/login'); }, [hasHydrated, isAuthenticated, router]);
-
-  const { data: bookings } = useQuery({
-    queryKey: ['my-bookings'],
-    queryFn: async () => { const { data } = await api.get('/bookings/my'); return data.data as Booking[]; },
-    enabled: isAuthenticated,
-  });
 
   const { data: trips, isLoading: tripsLoading } = useQuery({
     queryKey: ['my-itineraries'],
     queryFn: async () => { const { data } = await api.get('/itineraries/my'); return data.data as Trip[]; },
     enabled: isAuthenticated,
     refetchOnMount: 'always',
+  });
+
+  const { data: bookings, isLoading: bookingsLoading } = useQuery({
+    queryKey: ['my-bookings'],
+    queryFn: async () => { const { data } = await api.get('/bookings/my'); return data.data as Booking[]; },
+    enabled: isAuthenticated,
   });
 
   const deleteMutation = useMutation({
@@ -53,9 +61,11 @@ export default function DashboardPage() {
     onSuccess: (data) => { navigator.clipboard.writeText(window.location.origin + '/itinerary/' + data.data?.data?.share_token); toast.success('Share link copied!'); },
   });
 
-  const pendingCount = trips?.filter((t) => t.status === 'pending_approval').length || 0;
-  const approvedCount = trips?.filter((t) => ['approved', 'planned', 'active', 'completed'].includes(t.status)).length || 0;
-  const totalSpend = trips?.reduce((sum, t) => sum + rangeMid(t), 0) || 0;
+  const cancelBookingMutation = useMutation({
+    mutationFn: (id: number) => api.put(`/bookings/${id}/cancel`),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['my-bookings'] }); toast.success('Booking cancelled'); },
+    onError: () => toast.error('Could not cancel booking'),
+  });
 
   const visibleTrips = trips?.filter((t) => {
     if (tripFilter === 'pending_approval') return t.status === 'pending_approval';
@@ -63,71 +73,27 @@ export default function DashboardPage() {
     return true;
   });
 
-  const FILTER_LABELS: Record<string, string> = { '': 'My Trips', pending_approval: 'Pending Approval Trips', approved: 'Approved Trips' };
-
-  if (!hasHydrated || !isAuthenticated) return null;
+  const bookingTypeMap: Record<string, string> = { Hotels: 'hotel', Activities: 'activity', Transport: 'transport', Packages: 'package' };
+  const filteredBookings = bookings?.filter((b) => bookingTab === 'All' || b.booking_type === bookingTypeMap[bookingTab]) || [];
+  const BOOKING_ICONS: Record<string, string> = { hotel: '🏨', activity: '🎯', transport: '🚗', package: '📦' };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
-        <p className="text-gray-500 mt-1">Here&apos;s an overview of your trips</p>
+        <h1 className="text-3xl font-bold text-gray-800">My Trips</h1>
+        <p className="text-gray-500 mt-1">Your trip requests and every booking you&apos;ve made, in one place</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        {[
-          { label: 'My Trips', value: trips?.length || 0, icon: MapPin, color: 'blue', filter: '' as const },
-          { label: 'Pending Approval', value: pendingCount, icon: Clock, color: 'yellow', filter: 'pending_approval' as const },
-          { label: 'Approved', value: approvedCount, icon: CheckCircle, color: 'emerald', filter: 'approved' as const },
-          { label: 'Total Approx. Spend', value: formatCurrency(totalSpend), icon: DollarSign, color: 'purple', filter: null },
-        ].map(({ label, value, icon: Icon, color, filter }) => {
-          const active = filter !== null && tripFilter === filter;
-          const clickable = filter !== null;
-          return (
-            <button
-              key={label}
-              type="button"
-              onClick={() => clickable && setTripFilter(filter)}
-              disabled={!clickable}
-              className={`bg-white rounded-xl border p-3 sm:p-5 text-left transition-all min-w-0 ${clickable ? 'hover:shadow-md cursor-pointer' : 'cursor-default'} ${active ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-100'}`}
-            >
-              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl mb-2 sm:mb-3 flex items-center justify-center bg-${color}-100`}>
-                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 text-${color}-600`} />
-              </div>
-              <p className="text-lg sm:text-2xl font-bold text-gray-800 truncate">{value}</p>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{label}</p>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 mb-8">
-        <h2 className="font-bold text-gray-800 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {[
-            { label: 'Plan Trip', href: '/planner', icon: Sparkles, bg: 'bg-blue-50', text: 'text-blue-700' },
-            { label: 'Activities', href: '/activities', icon: Map, bg: 'bg-blue-50', text: 'text-blue-700' },
-            { label: 'Transport', href: '/transport', icon: Car, bg: 'bg-orange-50', text: 'text-orange-700' },
-            { label: 'Chat', href: '/chat', icon: Clock, bg: 'bg-purple-50', text: 'text-purple-700' },
-          ].map(({ label, href, icon: Icon, bg, text }) => (
-            <Link key={label} href={href} className={`${bg} ${text} rounded-xl p-3 flex flex-col items-center gap-2 hover:opacity-80 transition-opacity text-center`}>
-              <Icon className="w-5 h-5" />
-              <span className="text-xs font-medium">{label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* My Trips */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-gray-800">{FILTER_LABELS[tripFilter]}</h2>
-            {tripFilter && (
-              <button onClick={() => setTripFilter('')} className="text-xs text-blue-600 hover:underline font-medium">Clear filter</button>
-            )}
+      {/* Trip Requests */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <div className="flex gap-2 flex-wrap">
+            {TRIP_FILTERS.map((f) => (
+              <button key={f.value} onClick={() => setTripFilter(f.value)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${tripFilter === f.value ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                {f.label}
+              </button>
+            ))}
           </div>
           <Link href="/planner" className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors text-sm">
             <Plus className="w-4 h-4" /> New Trip
@@ -214,11 +180,11 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button onClick={() => shareMutation.mutate(t.id)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Share">
-                        <Share2 className="w-4 h-4" />
+                        <MapPin className="w-4 h-4" />
                       </button>
                       <button onClick={() => { if (confirm('Delete this trip?')) deleteMutation.mutate(t.id); }}
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                        <Trash2 className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -229,28 +195,53 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Recent Bookings */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-5 gap-3">
-          <h2 className="font-bold text-gray-800">Recent Bookings</h2>
-          <Link href="/dashboard/trips" className="text-sm text-blue-600 hover:underline shrink-0">View all →</Link>
+      {/* Bookings */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-800 mb-1">Bookings</h2>
+        <p className="text-gray-500 text-sm mb-4">Hotels, activities, transport & packages you&apos;ve reserved</p>
+
+        <div className="flex gap-2 flex-wrap mb-6">
+          {BOOKING_TABS.map((tab) => (
+            <button key={tab} onClick={() => setBookingTab(tab)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${bookingTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {tab}
+            </button>
+          ))}
         </div>
-        {!bookings?.length ? (
-          <p className="text-gray-400 text-sm text-center py-8">No bookings yet.</p>
+
+        {bookingsLoading ? (
+          <div className="space-y-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 bg-gray-100 rounded-xl animate-pulse" />)}</div>
+        ) : !filteredBookings.length ? (
+          <div className="text-center py-16 text-gray-500 bg-white rounded-xl border border-gray-100">
+            <BookOpen className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>No {bookingTab !== 'All' ? bookingTab.toLowerCase() : ''} bookings found.</p>
+          </div>
         ) : (
-          <div className="space-y-3">
-            {bookings.slice(0, 5).map((b) => (
-              <div key={b.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-sm font-bold text-blue-700 shrink-0">
-                  {b.booking_type === 'hotel' ? '🏨' : b.booking_type === 'activity' ? '🎯' : b.booking_type === 'package' ? '📦' : '🚗'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-800 text-sm truncate">{b.destination_name || `Booking #${b.id}`}</p>
-                  <p className="text-xs text-gray-400">{b.check_in ? formatDate(b.check_in) : formatDate(b.created_at)}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-gray-800">{formatCurrency(Number(b.total_amount || b.total_price) || 0)}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(b.status)}`}>{b.status}</span>
+          <div className="space-y-4">
+            {filteredBookings.map((b) => (
+              <div key={b.id} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 hover:shadow-sm transition-shadow">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl flex items-center justify-center text-xl sm:text-2xl shrink-0">
+                    {BOOKING_ICONS[b.booking_type || 'activity'] || '📋'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center flex-wrap gap-2 mb-1">
+                      <h3 className="font-bold text-gray-800 truncate">{b.destination_name || `Booking #${b.id}`}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border capitalize shrink-0 ${getStatusColor(b.status)}`}>{b.status}</span>
+                      {b.payment_status && <span className={`text-xs px-2 py-0.5 rounded-full border capitalize shrink-0 ${getStatusColor(b.payment_status)}`}>{b.payment_status}</span>}
+                    </div>
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                      {b.check_in && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {formatDate(b.check_in)} {b.check_out ? `→ ${formatDate(b.check_out)}` : ''}</span>}
+                      <span>{b.guests} guests</span>
+                      <span className="flex items-center gap-1 font-semibold text-gray-700"><DollarSign className="w-3.5 h-3.5 text-blue-500" /> {formatCurrency(Number(b.total_amount || b.total_price) || 0)}</span>
+                    </div>
+                  </div>
+                  {b.status === 'pending' && (
+                    <button onClick={() => { if (confirm('Cancel this booking?')) cancelBookingMutation.mutate(b.id); }}
+                      className="shrink-0 flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors border border-red-200">
+                      <X className="w-3.5 h-3.5" /> Cancel
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

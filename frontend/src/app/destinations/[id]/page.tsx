@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
+import PlanTripLink from '@/components/PlanTripLink';
 import { Destination, Review } from '@/types';
 import { MapPin, Star, Clock, DollarSign, Info, Calendar, Sparkles } from 'lucide-react';
 
@@ -42,11 +43,11 @@ export default function DestinationDetailPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
       {/* Image Gallery */}
-      <div className="grid grid-cols-3 gap-2 rounded-2xl overflow-hidden h-72 mb-8">
-        <div className="col-span-2 bg-gradient-to-br from-blue-400 to-blue-600 relative">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 rounded-2xl overflow-hidden h-56 sm:h-72 mb-8">
+        <div className="sm:col-span-2 bg-gradient-to-br from-blue-400 to-blue-600 relative">
           {mainImage && <img src={mainImage} alt={destination.name} className="w-full h-full object-cover" />}
         </div>
-        <div className="grid grid-rows-2 gap-2">
+        <div className="hidden sm:grid grid-rows-2 gap-2">
           {[1, 2].map((i) => (
             <div key={i} className="bg-gradient-to-br from-blue-300 to-blue-500 relative overflow-hidden">
               {destination.image_urls?.[i] && (
@@ -147,9 +148,9 @@ export default function DestinationDetailPage() {
             <Sparkles className="w-6 h-6 text-blue-200 mb-2" />
             <h3 className="font-bold text-lg mb-1">Plan Your Visit</h3>
             <p className="text-blue-100 text-sm mb-4">Create a personalized itinerary including {destination.name}.</p>
-            <Link href="/planner" className="block w-full text-center bg-white text-blue-700 font-semibold py-2.5 rounded-lg hover:bg-blue-50 transition-colors text-sm">
+            <PlanTripLink className="block w-full text-center bg-white text-blue-700 font-semibold py-2.5 rounded-lg hover:bg-blue-50 transition-colors text-sm">
               Start Planner →
-            </Link>
+            </PlanTripLink>
           </div>
 
           {/* Quick Info */}

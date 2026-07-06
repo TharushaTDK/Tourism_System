@@ -34,22 +34,22 @@ export default function SearchBar() {
         />
       </div>
 
-      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100">
+      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 flex-wrap sm:flex-nowrap">
         <Calendar className="w-4 h-4 text-blue-500 shrink-0" />
         <input
           type="date"
           value={checkIn}
           min={new Date().toISOString().split('T')[0]}
           onChange={(e) => setCheckIn(e.target.value)}
-          className="bg-transparent text-sm text-gray-700 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm text-gray-700 focus:outline-none"
         />
-        <span className="text-gray-300">→</span>
+        <span className="text-gray-300 shrink-0">→</span>
         <input
           type="date"
           value={checkOut}
           min={checkIn || new Date().toISOString().split('T')[0]}
           onChange={(e) => setCheckOut(e.target.value)}
-          className="bg-transparent text-sm text-gray-700 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm text-gray-700 focus:outline-none"
         />
       </div>
 

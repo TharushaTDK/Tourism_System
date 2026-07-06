@@ -47,11 +47,11 @@ export default function TrackingPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <Navigation className="w-6 h-6 text-blue-600" /> Live Trip Tracking
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <Navigation className="w-6 h-6 text-blue-600 shrink-0" /> Live Trip Tracking
         </h1>
-        <div className={`flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full ${connected ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+        <div className={`flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full shrink-0 ${connected ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
           <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
           {connected ? 'Live' : 'Connecting...'}
         </div>

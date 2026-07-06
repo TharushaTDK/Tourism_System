@@ -61,7 +61,7 @@ export default function ReviewsPage() {
       ) : (
         <div className="space-y-4">
           {reviews.map((r) => (
-            <div key={r.id} className="bg-white rounded-xl border border-gray-100 p-5">
+            <div key={r.id} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5">
               {editingId === r.id ? (
                 <div className="space-y-3">
                   <StarRating rating={editRating} size="lg" interactive onChange={setEditRating} />
@@ -75,12 +75,12 @@ export default function ReviewsPage() {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+                    <div className="flex items-center gap-2 min-w-0">
                       <StarRating rating={r.rating} size="sm" />
-                      {r.title && <span className="font-medium text-gray-800 text-sm">{r.title}</span>}
+                      {r.title && <span className="font-medium text-gray-800 text-sm truncate">{r.title}</span>}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button onClick={() => startEdit(r)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit3 className="w-4 h-4" /></button>
                       <button onClick={() => { if (confirm('Delete this review?')) deleteMutation.mutate(r.id); }} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
