@@ -170,10 +170,48 @@ export const approveItinerary = async (req: Request, res: Response): Promise<voi
   const { notes } = req.body;
   try {
     const result = await pool.query(
-      `UPDATE itineraries SET status='approved', notes=COALESCE($1,notes), approved_at=NOW(), updated_at=NOW() WHERE id=$2 RETURNING *`,
+      `UPDATE itineraries SET status='approved', notes=COALESCE($1,notes), approved_at=NOW(), updated_at=NOW() WHERE id=$2 AND status='payment_submitted' RETURNING *`,
       [notes, req.params.id]
     );
-    if (!result.rows[0]) { res.status(404).json({ success: false, message: 'Not found' }); return; }
+    if (!result.rows[0]) { res.status(400).json({ success: false, message: 'Trip needs a submitted payment slip before it can be fully approved' }); return; }
     res.json({ success: true, message: 'Itinerary approved', data: result.rows[0] });
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server error' }); }
+};
+
+export const setItineraryPrice = async (req: Request, res: Response): Promise<void> => {
+  const quoted_price = Number(req.body.quoted_price);
+  if (!quoted_price || quoted_price <= 0) { res.status(400).json({ success: false, message: 'A valid quoted_price is required' }); return; }
+  const advance_amount = Math.round(quoted_price * 0.2 * 100) / 100;
+  try {
+    const result = await pool.query(
+      `UPDATE itineraries SET quoted_price=$1, advance_amount=$2, status = CASE WHEN status='pending_approval' THEN 'price_set' ELSE status END, updated_at=NOW() WHERE id=$3 RETURNING *`,
+      [quoted_price, advance_amount, req.params.id]
+    );
+    if (!result.rows[0]) { res.status(404).json({ success: false, message: 'Not found' }); return; }
+    res.json({ success: true, message: 'Price saved', data: result.rows[0] });
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server error' }); }
+};
+
+export const showPriceToCustomer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await pool.query(
+      `UPDATE itineraries SET status='quoted', price_shown_at=NOW(), updated_at=NOW() WHERE id=$1 AND quoted_price IS NOT NULL RETURNING *`,
+      [req.params.id]
+    );
+    if (!result.rows[0]) { res.status(400).json({ success: false, message: 'Set a price before showing it to the customer' }); return; }
+    res.json({ success: true, message: 'Price shown to customer', data: result.rows[0] });
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server error' }); }
+};
+
+export const submitAdvancePayment = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!req.file) { res.status(400).json({ success: false, message: 'A payment slip file is required' }); return; }
+  try {
+    const slipUrl = `/uploads/${req.file.filename}`;
+    const result = await pool.query(
+      `UPDATE itineraries SET advance_payment_slip_url=$1, advance_payment_submitted_at=NOW(), status='payment_submitted', updated_at=NOW() WHERE id=$2 AND user_id=$3 AND status='quoted' RETURNING *`,
+      [slipUrl, req.params.id, req.user?.id]
+    );
+    if (!result.rows[0]) { res.status(400).json({ success: false, message: 'Trip must be quoted before submitting an advance payment' }); return; }
+    res.json({ success: true, message: 'Payment slip submitted', data: result.rows[0] });
   } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server error' }); }
 };

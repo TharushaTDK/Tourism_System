@@ -465,6 +465,7 @@ export default function PlannerPage() {
 
               <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 max-w-md mx-auto text-sm text-blue-700 text-left space-y-3">
                 <p>✅ Your trip request has been submitted and saved to <Link href="/dashboard" className="underline font-semibold">My Trips</Link>.</p>
+                <p>💳 Once our team confirms your exact price, you&apos;ll see it in <Link href="/dashboard/trips" className="underline font-semibold">My Trips</Link> along with a button to make your 20% advance payment and lock in your trip.</p>
                 <p>💬 Got a question in the meantime? <Link href="/chat" className="underline font-semibold">Ask our chatbot</Link> — our team will give you full support and exact pricing details within a few minutes.</p>
               </div>
 

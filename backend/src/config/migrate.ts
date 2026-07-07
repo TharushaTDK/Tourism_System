@@ -211,12 +211,17 @@ const migrate = async (): Promise<void> => {
       );
     `);
     await client.query(`ALTER TABLE itineraries DROP CONSTRAINT IF EXISTS itineraries_status_check;`);
-    await client.query(`ALTER TABLE itineraries ADD CONSTRAINT itineraries_status_check CHECK (status IN ('draft','planned','active','completed','pending_approval','approved'));`);
+    await client.query(`ALTER TABLE itineraries ADD CONSTRAINT itineraries_status_check CHECK (status IN ('draft','planned','active','completed','pending_approval','approved','price_set','quoted','payment_submitted'));`);
     await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS contact_email VARCHAR(255);`);
     await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS contact_phone VARCHAR(30);`);
     await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS contact_whatsapp VARCHAR(30);`);
     await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS trip_details JSONB;`);
     await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;`);
+    await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS quoted_price DECIMAL(10,2);`);
+    await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS advance_amount DECIMAL(10,2);`);
+    await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS price_shown_at TIMESTAMP;`);
+    await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS advance_payment_slip_url VARCHAR(500);`);
+    await client.query(`ALTER TABLE itineraries ADD COLUMN IF NOT EXISTS advance_payment_submitted_at TIMESTAMP;`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS itinerary_items (

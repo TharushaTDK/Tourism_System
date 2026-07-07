@@ -29,6 +29,9 @@ export function getStatusColor(status: string): string {
     in_progress: 'bg-orange-100 text-orange-700 border-orange-200',
     scheduled: 'bg-teal-100 text-teal-700 border-teal-200',
     pending_approval: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    price_set: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    quoted: 'bg-sky-100 text-sky-700 border-sky-200',
+    payment_submitted: 'bg-orange-100 text-orange-700 border-orange-200',
     approved: 'bg-green-100 text-green-700 border-green-200',
   };
   return map[status] ?? 'bg-gray-100 text-gray-600 border-gray-200';

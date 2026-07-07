@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { createItinerary, getMyItineraries, getItineraryById, updateItinerary, deleteItinerary, addItem, updateItem, removeItem, reorderItems, shareItinerary, getSharedItinerary, calculateCost } from '../controllers/itineraryController';
+import { createItinerary, getMyItineraries, getItineraryById, updateItinerary, deleteItinerary, addItem, updateItem, removeItem, reorderItems, shareItinerary, getSharedItinerary, calculateCost, submitAdvancePayment } from '../controllers/itineraryController';
 import { authenticate } from '../middleware/auth';
+import { uploadPaymentSlip } from '../middleware/upload';
 
 const router = Router();
 router.post('/', authenticate, createItinerary);
@@ -15,4 +16,5 @@ router.put('/:id/items/:itemId', authenticate, updateItem);
 router.delete('/:id/items/:itemId', authenticate, removeItem);
 router.post('/:id/share', authenticate, shareItinerary);
 router.get('/:id/cost', authenticate, calculateCost);
+router.post('/:id/payment-slip', authenticate, uploadPaymentSlip, submitAdvancePayment);
 export default router;

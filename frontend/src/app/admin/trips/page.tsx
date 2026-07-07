@@ -4,13 +4,18 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { Trip } from '@/types';
-import { X, Mail, Phone, MessageCircle, CheckCircle2, MapPin, Calendar, Users, DollarSign } from 'lucide-react';
+import { X, Mail, Phone, MessageCircle, CheckCircle2, MapPin, Calendar, Users, DollarSign, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { formatCurrency, formatDateRange, getStatusColor, formatStatusLabel } from '@/lib/utils';
+import { formatCurrency, formatDate, formatDateRange, getStatusColor, formatStatusLabel } from '@/lib/utils';
+
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
 const FILTERS = [
   { value: '', label: 'All' },
   { value: 'pending_approval', label: 'Pending Approval' },
+  { value: 'price_set', label: 'Priced' },
+  { value: 'quoted', label: 'Awaiting Payment' },
+  { value: 'payment_submitted', label: 'Payment Submitted' },
   { value: 'approved', label: 'Confirmed' },
 ];
 
@@ -18,6 +23,7 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState(trip.title);
   const [notes, setNotes] = useState(trip.notes || '');
+  const [quotedPrice, setQuotedPrice] = useState(trip.quoted_price != null ? String(trip.quoted_price) : '');
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-trips'] });
 
@@ -27,13 +33,27 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
     onError: () => toast.error('Failed to save'),
   });
 
+  const setPriceMutation = useMutation({
+    mutationFn: () => api.patch(`/admin/itineraries/${trip.id}/price`, { quoted_price: Number(quotedPrice) }),
+    onSuccess: () => { invalidate(); toast.success('Price saved'); },
+    onError: () => toast.error('Failed to save price'),
+  });
+
+  const showPriceMutation = useMutation({
+    mutationFn: () => api.patch(`/admin/itineraries/${trip.id}/show-price`),
+    onSuccess: () => { invalidate(); toast.success('Price shown to customer'); },
+    onError: () => toast.error('Failed to show price'),
+  });
+
   const approveMutation = useMutation({
     mutationFn: () => api.patch(`/admin/itineraries/${trip.id}/approve`, { notes }),
-    onSuccess: () => { invalidate(); toast.success('Trip confirmed — customer can now see it'); onClose(); },
-    onError: () => toast.error('Failed to confirm'),
+    onSuccess: () => { invalidate(); toast.success('Trip fully approved'); onClose(); },
+    onError: () => toast.error('Failed to approve — a payment slip must be submitted first'),
   });
 
   const td = trip.trip_details;
+  const priceShown = ['quoted', 'payment_submitted', 'approved', 'planned', 'active', 'completed'].includes(trip.status);
+  const advancePreview = Number(quotedPrice) > 0 ? Math.round(Number(quotedPrice) * 0.2 * 100) / 100 : 0;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4" onClick={onClose}>
@@ -92,6 +112,41 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
             </div>
           ) : null}
 
+          <div className="bg-sky-50 border border-sky-100 rounded-lg p-3 space-y-3">
+            <p className="text-xs font-bold text-sky-800">Exact Price</p>
+            <div className="flex items-end gap-2 flex-wrap">
+              <div className="flex-1 min-w-[140px]">
+                <label className="block text-xs font-medium text-gray-600 mb-1">Quoted Price (USD)</label>
+                <input type="number" min={0} step="0.01" value={quotedPrice} onChange={(e) => setQuotedPrice(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="e.g. 1200" />
+              </div>
+              <button onClick={() => setPriceMutation.mutate()} disabled={setPriceMutation.isPending || !Number(quotedPrice)}
+                className="border-2 border-sky-500 text-sky-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-sky-100 disabled:opacity-50 shrink-0">
+                {setPriceMutation.isPending ? 'Saving...' : 'Save Price'}
+              </button>
+            </div>
+            {advancePreview > 0 && <p className="text-xs text-sky-700">20% advance payment: <span className="font-semibold">{formatCurrency(advancePreview)}</span></p>}
+            {priceShown ? (
+              <p className="text-xs text-green-700 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Price shown to customer{trip.price_shown_at ? ` on ${formatDate(trip.price_shown_at)}` : ''}</p>
+            ) : (
+              <button onClick={() => showPriceMutation.mutate()} disabled={showPriceMutation.isPending || !trip.quoted_price}
+                className="w-full bg-sky-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-sky-700 disabled:opacity-50">
+                {showPriceMutation.isPending ? 'Sending...' : 'Show Price to Customer'}
+              </button>
+            )}
+          </div>
+
+          {trip.advance_payment_slip_url && (
+            <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-bold text-orange-800">Advance Payment Slip</p>
+              <p className="text-xs text-orange-700">Submitted{trip.advance_payment_submitted_at ? ` on ${formatDate(trip.advance_payment_submitted_at)}` : ''} — advance due: {formatCurrency(Number(trip.advance_amount) || 0)}</p>
+              <a href={`${API_ORIGIN}${trip.advance_payment_slip_url}`} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-orange-700 hover:underline">
+                <FileText className="w-4 h-4" /> View Payment Slip
+              </a>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Title</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)}
@@ -109,10 +164,10 @@ function DetailModal({ trip, onClose }: { trip: Trip; onClose: () => void }) {
               className="flex-1 border-2 border-blue-500 text-blue-600 py-2.5 rounded-lg font-semibold hover:bg-blue-50 disabled:opacity-60">
               {saveMutation.isPending ? 'Saving...' : 'Save Changes'}
             </button>
-            {trip.status === 'pending_approval' && (
+            {trip.status === 'payment_submitted' && (
               <button onClick={() => approveMutation.mutate()} disabled={approveMutation.isPending}
                 className="flex-1 bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center gap-2 disabled:opacity-60">
-                <CheckCircle2 className="w-4 h-4" /> {approveMutation.isPending ? 'Confirming...' : 'Confirm & Notify Customer'}
+                <CheckCircle2 className="w-4 h-4" /> {approveMutation.isPending ? 'Approving...' : 'Fully Approve Trip'}
               </button>
             )}
           </div>

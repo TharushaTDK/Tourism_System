@@ -26,3 +26,15 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024
 
 export const uploadSingle = upload.single('image');
 export const uploadMultiple = upload.array('images', 10);
+
+const slipFileFilter = (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image or PDF files are allowed'));
+  }
+};
+
+const uploadSlip = multer({ storage, fileFilter: slipFileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+
+export const uploadPaymentSlip = uploadSlip.single('slip');

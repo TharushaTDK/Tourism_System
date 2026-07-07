@@ -7,17 +7,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { Booking, Trip } from '@/types';
-import {
-  Calendar, DollarSign, X, BookOpen, MapPin, Clock, Mail, Phone, MessageCircle,
-  ChevronDown, ChevronUp, CheckCircle2, Plus,
-} from 'lucide-react';
+import { Calendar, DollarSign, X, BookOpen, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { formatCurrency, getStatusColor, formatDate, formatDateRange, formatStatusLabel } from '@/lib/utils';
+import { formatCurrency, getStatusColor, formatDate } from '@/lib/utils';
+import TripCard from '@/components/dashboard/TripCard';
+import AdvancePaymentModal from '@/components/dashboard/AdvancePaymentModal';
 
 const BOOKING_TABS = ['All', 'Hotels', 'Activities', 'Transport', 'Packages'];
-const TRIP_FILTERS: { label: string; value: '' | 'pending_approval' | 'approved' }[] = [
+const TRIP_FILTERS: { label: string; value: '' | 'pending_approval' | 'quoted' | 'payment_submitted' | 'approved' }[] = [
   { label: 'All', value: '' },
   { label: 'Pending Approval', value: 'pending_approval' },
+  { label: 'Awaiting Payment', value: 'quoted' },
+  { label: 'Payment Submitted', value: 'payment_submitted' },
   { label: 'Approved', value: 'approved' },
 ];
 
@@ -32,8 +33,9 @@ export default function TripsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [tripFilter, setTripFilter] = useState<'' | 'pending_approval' | 'approved'>('');
+  const [tripFilter, setTripFilter] = useState<'' | 'pending_approval' | 'quoted' | 'payment_submitted' | 'approved'>('');
   const [bookingTab, setBookingTab] = useState('All');
+  const [payingTrip, setPayingTrip] = useState<Trip | null>(null);
 
   useEffect(() => { if (hasHydrated && !isAuthenticated) router.push('/login'); }, [hasHydrated, isAuthenticated, router]);
 
@@ -68,7 +70,9 @@ export default function TripsPage() {
   });
 
   const visibleTrips = trips?.filter((t) => {
-    if (tripFilter === 'pending_approval') return t.status === 'pending_approval';
+    if (tripFilter === 'pending_approval') return t.status === 'pending_approval' || t.status === 'price_set';
+    if (tripFilter === 'quoted') return t.status === 'quoted';
+    if (tripFilter === 'payment_submitted') return t.status === 'payment_submitted';
     if (tripFilter === 'approved') return ['approved', 'planned', 'active', 'completed'].includes(t.status);
     return true;
   });
@@ -119,81 +123,19 @@ export default function TripsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {visibleTrips.map((t) => {
-              const range = t.trip_details?.cost_estimate?.total;
-              const expanded = expandedId === t.id;
-              const isApproved = ['approved', 'planned', 'active', 'completed'].includes(t.status);
-              return (
-                <div key={t.id} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-shadow">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center flex-wrap gap-2 mb-2">
-                        <h3 className="font-bold text-gray-800">{t.title}</h3>
-                        {t.ai_generated && <span className="flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Auto-Generated</span>}
-                        <span className={`text-xs px-2 py-0.5 rounded-full border ${getStatusColor(t.status)}`}>{formatStatusLabel(t.status)}</span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-2">
-                        {t.start_date && t.end_date && (
-                          <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-blue-500" /> {formatDateRange(t.start_date, t.end_date)}</span>
-                        )}
-                        <span>{t.total_days} days</span>
-                        {range ? (
-                          <span className="flex items-center gap-1"><DollarSign className="w-4 h-4 text-blue-500" /> Approx. {formatCurrency(range.low)} – {formatCurrency(range.high)}</span>
-                        ) : t.estimated_cost ? (
-                          <span className="flex items-center gap-1"><DollarSign className="w-4 h-4 text-blue-500" /> Est. {formatCurrency(Number(t.estimated_cost))}</span>
-                        ) : null}
-                      </div>
-
-                      {t.trip_details?.destination_names?.length ? (
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                          {t.trip_details.destination_names.map((name) => (
-                            <span key={name} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{name}</span>
-                          ))}
-                        </div>
-                      ) : null}
-
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-400 mb-2">
-                        {t.contact_email && <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> {t.contact_email}</span>}
-                        {t.contact_phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> {t.contact_phone}</span>}
-                        {t.contact_whatsapp && <span className="flex items-center gap-1"><MessageCircle className="w-3.5 h-3.5" /> {t.contact_whatsapp}</span>}
-                      </div>
-
-                      {t.status === 'pending_approval' && (
-                        <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-100 rounded-lg px-3 py-2 flex items-center gap-1.5 mt-2">
-                          <Clock className="w-3.5 h-3.5 shrink-0" /> Waiting for our team&apos;s approval — you&apos;ll be contacted within a few hours.
-                        </p>
-                      )}
-
-                      {isApproved && t.notes && (
-                        <div className="mt-2">
-                          <button onClick={() => setExpandedId(expanded ? null : t.id)} className="flex items-center gap-1 text-xs text-blue-600 hover:underline font-medium">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> {expanded ? 'Hide' : 'View'} Full Itinerary {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                          </button>
-                          {expanded && (
-                            <div className="bg-blue-50 rounded-xl p-4 mt-2">
-                              <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm leading-relaxed">{t.notes}</pre>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button onClick={() => shareMutation.mutate(t.id)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Share">
-                        <MapPin className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => { if (confirm('Delete this trip?')) deleteMutation.mutate(t.id); }}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {visibleTrips.map((t) => (
+              <TripCard key={t.id} trip={t} expanded={expandedId === t.id}
+                onToggleExpand={() => setExpandedId(expandedId === t.id ? null : t.id)}
+                onShare={() => shareMutation.mutate(t.id)}
+                onDelete={() => { if (confirm('Delete this trip?')) deleteMutation.mutate(t.id); }}
+                onPay={() => setPayingTrip(t)}
+              />
+            ))}
           </div>
         )}
       </div>
+
+      {payingTrip && <AdvancePaymentModal trip={payingTrip} onClose={() => setPayingTrip(null)} />}
 
       {/* Bookings */}
       <div>

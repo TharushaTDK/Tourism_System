@@ -185,7 +185,7 @@ export interface Trip {
   total_days: number;
   total_budget?: number;
   estimated_cost?: number;
-  status: 'draft' | 'planned' | 'active' | 'completed' | 'pending_approval' | 'approved';
+  status: 'draft' | 'planned' | 'active' | 'completed' | 'pending_approval' | 'price_set' | 'quoted' | 'payment_submitted' | 'approved';
   notes?: string;
   ai_generated: boolean;
   share_token?: string;
@@ -197,6 +197,11 @@ export interface Trip {
   customer_name?: string;
   account_email?: string;
   approved_at?: string;
+  quoted_price?: number | string;
+  advance_amount?: number | string;
+  price_shown_at?: string;
+  advance_payment_slip_url?: string;
+  advance_payment_submitted_at?: string;
   created_at?: string;
 }
 
